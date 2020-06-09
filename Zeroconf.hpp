@@ -6,36 +6,74 @@
 #define CPPOTIFY_ZEROCONF_HPP
 
 #include <string>
+#include <unordered_set>
+#include "Service.hpp"
+#include "PacketListener.hpp"
 
 class Zeroconf {
 public:
-    static const std::string DISCOVERY;
     Zeroconf();
+
     static std::string getOrCreateLocalHostName();
-    Zeroconf setUseIpv4(bool ipv4);
-    Zeroconf setUseIpv6(bool ipv6);
+
+    Zeroconf &setUseIpv4(bool ipv4);
+
+    Zeroconf &setUseIpv6(bool ipv6);
+
     ~Zeroconf();
-    Zeroconf addReceiveListener();
-    Zeroconf removeReceiveListener();
-    Zeroconf addSendListener();
-    Zeroconf removeSendListener();
-    Zeroconf addNetworkInterfaces();
-    Zeroconf removeNetworkInterfaces();
-    Zeroconf addAllNetworkInterfaces();
+
+    Zeroconf &addReceiveListener();
+
+    Zeroconf &removeReceiveListener();
+
+    Zeroconf &addSendListener();
+
+    Zeroconf &removeSendListener();
+
+    Zeroconf &addNetworkInterfaces();
+
+    Zeroconf &removeNetworkInterfaces();
+
+    Zeroconf &addAllNetworkInterfaces();
+
     std::string getDomain();
-    Zeroconf setDomain(std::string domain);
+
+    Zeroconf &setDomain(std::string &domain);
+
     std::string getLocalHostName();
-    Zeroconf setLocalHostName(std::string name);
+
+    Zeroconf &setLocalHostName(std::string name);
+
     void getLocalAddresses();
+
     void send();
-    void getRegistry();
+
+    std::vector<Record> getRegistry();
+
     void getAnnouncedServices();
-    void announce();
-    void unannounce();
+
+    void announce(Service &service);
+
+    void unannounce(Service &service);
 
 private:
+    static const std::string DISCOVERY;
+
+    //static const int BROADCAST4;
+    //static const int BROADCAST6;
+    //const int thread;
+    const std::vector<Record> registry;
+    const std::unordered_set<Service> services;
+    const std::vector<PacketListener *> receiveListeners;
+    const std::vector<PacketListener *> sendListeners;
+    bool useIpv4 = true;
+    bool useIpv6 = true;
+    std::string hostname;
+    std::string domain;
+
     void handlePacket();
-    bool probe(std::string fqdn);
+
+    bool probe(std::string &fqdn);
 
 };
 
